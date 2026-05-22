@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Millonario Cognitivo PRO | Steven Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --bg: #05020a;
+            --panel: #110822;
+            --gold: #fbc02d;
+            --purple: #4a148c;
+            --success: #2e7d32;
+            --error: #c62828;
+            --text: #ffffff;
+            --spotify: #1ed760;
+        }
+
+        * { box-sizing: border-box; }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            background-image: radial-gradient(circle at center, #2e1065 0%, #05020a 100%);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        #full-screen-layout {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        #prize-ladder-container {
+            flex: 0.25;
+            background: var(--panel);
+            border: 3px solid var(--purple);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            box-shadow: 0 0 30px rgba(74, 20, 140, 0.4);
+        }
+
+        .ladder-header {
+            text-align: center;
+            color: var(--gold);
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--purple);
+            padding-bottom: 10px;
+        }
+
+        #prize-steps {
+            flex: 1;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 2px;
+        }
+
+        .step {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: var(--gold);
+            font-size: 1.1vw;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .step span { margin-right: 15px; color: white; width: 30px; display: inline-block; }
+
+        .active-step {
+            background: linear-gradient(90deg, #fbc02d, #f9a825);
+            color: black !important;
+            box-shadow: 0 0 15px var(--gold);
+        }
+        .active-step span { color: black; }
+
+        #game-area {
+            flex: 0.75;
+            background: var(--panel);
+            border: 3px solid var(--purple);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+            text-align: center;
+        }
+
+        /* CONTENEDOR SUPERIOR PARA COMODINES Y BOTÓN SIGUIENTE */
+        .top-bar-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .joker-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        .joker-btn {
+            background: black;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .joker-btn:disabled { opacity: 0.2; }
+
+        /* NUEVO DISEÑO DEL BOTÓN SIGUIENTE PREGUNTA (AL LADO DE LOS COMODINES) */
+        .next-action-btn {
+            background: linear-gradient(90deg, #2e7d32, #43a047);
+            color: white;
+            border: 2px solid white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            padding: 12px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(46, 125, 50, 0.6);
+            transition: transform 0.2s;
+        }
+        .next-action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        #question-box { font-size: 2.2rem; margin: 15px 0; max-width: 90%; line-height: 1.3; }
+
+        #question-image-container {
+            margin-bottom: 15px;
+            max-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #question-image-container img {
+            max-height: 200px;
+            border: 3px solid var(--purple);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(74, 20, 140, 0.6);
+        }
+
+        #success-image-container {
+            margin: 15px 0;
+            max-height: 500px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        #success-image-container img {
+            max-height: 500px;
+            max-width: 85%;
+            width: auto;
+            object-fit: contain;
+            border: 6px solid var(--success);
+            border-radius: 25px;
+            box-shadow: 0 0 45px rgba(46, 125, 50, 0.95);
+        }
+
+        .rima-badge {
+            background: #2e1065;
+            border: 2px dashed var(--gold);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+            display: inline-block;
+        }
+
+        .audio-player-box {
+            margin-bottom: 15px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .audio-player-box iframe {
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(30, 215, 96, 0.3);
+        }
+
+        .grid-answers {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .answer-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 60px;
+            font-size: 1.4rem;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .answer-btn span { color: var(--gold); font-weight: bold; margin-right: 15px; }
+
+        .correct { background: var(--success) !important; border-color: white !important; }
+        .wrong { background: var(--error) !important; }
+
+        .firework {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            pointer-events: none;
+            z-index: 2000;
+            font-size: 2.5rem;
+            animation: explode 1.5s ease-out forwards;
+        }
+        @keyframes explode {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; }
+        }
+
+        #moai-death {
+            font-size: 18rem;
+            display: block;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 30px rgba(255,255,255,0.3));
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="full-screen-layout">
+    <div id="prize-ladder-container">
+        <div class="ladder-header">Escalera de Premios</div>
+        <div id="prize-steps"></div>
+    </div>
+
+    <div id="game-area">
+        <!-- Pantalla de Bienvenida con GIF -->
+        <div id="mood-view">
+            <img src="rana-imagen-animada-0005.gif" alt="Rana Saludando" style="width: 180px; height: auto; margin-bottom: 20px;">
+            <h1 style="color: var(--gold); font-size: 3.5rem;">¿Cómo estás hoy? 💎</h1>
+            <p style="font-size: 2rem; margin-bottom: 40px;">ESCOGE CÓMO ESTÁS:</p>
+            <div style="display: flex; gap: 30px; justify-content: center;">
+                <button onclick="start()" style="font-size: 5rem; background:none; border:none; cursor:pointer;">​🫩​</button>
+                <button onclick="start()" style="font-size: 5rem; background:none; border:none; cursor:pointer;">😀</button>
+                <button onclick="start()" style="font-size: 5rem; background:none; border:none; cursor:pointer;">😐</button>
+                <button onclick="start()" style="font-size: 5rem; background:none; border:none; cursor:pointer;">🥺</button>
+                <button onclick="start()" style="font-size: 5rem; background:none; border:none; cursor:pointer;">😢</button>
+                <button onclick="start()" style="font-size: 5rem; background:none; border:none; cursor:pointer;">😡​</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Quiz -->
+        <div id="quiz-view" class="hidden" style="width: 100%;">
+            <!-- Barra Superior: Comodines a la izquierda, Siguiente Pregunta a la derecha -->
+            <div class="top-bar-container">
+                <div class="joker-container">
+                    <button class="joker-btn" id="j-50" onclick="call50()">🌓 50:50</button>
+                    <button class="joker-btn" id="j-pub" onclick="callPublic()">👥 Público</button>
+                    <button class="joker-btn" id="j-call" onclick="callFriend()">📞 Llamada</button>
+                    <button class="joker-btn" id="j-hint" onclick="callHint()">🎁 Pista</button>
+                </div>
+                
+                <button id="next-question-btn" class="next-action-btn hidden" onclick="goToNextQuestion()">
+                    Siguiente Pregunta ➔
+                </button>
+            </div>
+            
+            <div style="margin-top: 65px;">
+                <div id="question-image-container" class="hidden"></div>
+                
+                <!-- Reproductor Oficial Incrustado de Spotify -->
+                <div id="audio-player-container" class="hidden">
+                    <div class="audio-player-box">
+                        <iframe src="https://open.spotify.com/embed/track/3iYtSK5sD5wjMA2RyAVUnC?utm_source=generator&theme=0" width="300" height="80" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <div id="rima-words" class="rima-badge hidden"></div>
+                
+                <div id="success-image-container" class="hidden"></div>
+
+                <h2 id="question-box"></h2>
+            </div>
+
+            <div class="grid-answers" id="answers-wrapper">
+                <button class="answer-btn" id="ans0" onclick="selectAnswer(0)"><span>a)</span> <span id="l0"></span></button>
+                <button class="answer-btn" id="ans1" onclick="selectAnswer(1)"><span>b)</span> <span id="l1"></span></button>
+                <button class="answer-btn" id="ans2" onclick="selectAnswer(2)"><span>c)</span> <span id="l2"></span></button>
+                <button class="answer-btn" id="ans3" onclick="selectAnswer(3)"><span>d)</span> <span id="l3"></span></button>
+            </div>
+        </div>
+
+        <!-- Pantalla Final -->
+        <div id="end-view" class="hidden">
+            <div id="moai-container" class="hidden">
+                <span id="moai-death" class="animate__animated animate__zoomIn">🗿</span>
+                <h1 style="color: var(--error); font-size: 3.5rem;">PERDISTE</h1>
+            </div>
+            <div id="win-container" class="hidden">
+                <h1 style="color: var(--gold); font-size: 4rem;">🏆 ¡ERES MILLONARIO! 🏆</h1>
+            </div>
+            <p style="font-size: 2.5rem; margin-top: 20px;">Premio acumulado:</p>
+            <div id="total-cash" style="font-size: 6rem; color: var(--gold); text-shadow: 0 0 30px var(--gold);">€0</div>
+            <button onclick="location.reload()" class="joker-btn" style="margin-top: 50px; padding: 20px 60px; font-size: 1.5rem;">REINTENTAR</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const prizeList = ["100.000", "200.000", "300.000", "400.000", "600.000", "800.000", "1.200.000", "1.700.000", "2.500.000", "3.500.000", "6.000.000", "9.000.000", "12.000.000", "17.000.000", "35.000.000"];
+    const moneyItems = ['💸', '💰', '💶', '💎', '🪙', '💵'];
+
+    const questions = [
+        { q: "1. ¿Qué fruto se come en España en Nochevieja?", tipo: "texto", o: ["Manzanas", "Uvas", "Nueces", "Cerezas"], c: 1, h: "Viene en racimos.", imgCorrecta: "uvas.jpg" },
+        { q: "2. ¿Cuál es el resultado de 100 - 25?", tipo: "texto", o: ["85", "65", "75", "50"], c: 2, h: "Tres cuartos de cien.", imgCorrecta: "75.jpg" },
+        { q: "3. ¿Qué pesa más, un kilo de plomo o un kilo de plumas?", tipo: "texto", o: ["El plomo", "Las plumas", "Pesan lo mismo, ¡un kilo!", "Ninguna es correcta"], c: 2, h: "Fíjate bien en las unidades de medida, ambas dicen un kilo.", imgCorrecta: "balanza.jpg" },
+        { q: "4. ¿De qué color son las cejas del caballo blanco de Santiago?", tipo: "texto", o: ["Blancas", "Negras", "Los caballos no tienen cejas", "Marrones"], c: 2, h: "Piensa en la anatomía real de un caballo.", imgCorrecta: "caballo.jpg" },
+        { q: "5. ¿De qué color es la bandera de la paz?", tipo: "texto", o: ["Roja", "Verde", "Blanca", "Negra"], c: 2, h: "Inmaculada.", imgCorrecta: "paz.jpg" },
+        { q: "6. ¿En qué ciudad está la Sagrada Familia?", tipo: "texto", o: ["Madrid", "Valencia", "Barcelona", "Bilbao"], c: 2, h: "En el Mediterráneo.", imgCorrecta: "sagrada_familia.jpg" },
+        { 
+          q: "7. ¿Qué animal es el que aparece en la imagen principal?", 
+          tipo: "texto", 
+          imgPregunta: "animal_principal.jpg", 
+          o: ["Tiburón Blanco", "Ballena Azul", "Dinosaurio", "Oso Polar"], 
+          c: 0, 
+          h: "Es un gran depredador marino con mandíbulas icónicas.",
+          imgCorrecta: "tiburon_correcto.jpg"
+        },
+        { q: "8. ¿Qué día de la semana sigue al sábado?", tipo: "texto", o: ["Lunes", "Viernes", "Domingo", "Martes"], c: 2, h: "Día de descanso total.", imgCorrecta: "domingo.jpg" },
+        { q: "9. Instrumento principal del flamenco:", tipo: "texto", o: ["Piano", "Guitarra", "Violín", "Arpa"], c: 1, h: "Instrumento de cuerda pulsada.", imgCorrecta: "guitarra.jpg" },
+        { q: "10. Capital de Portugal:", tipo: "texto", o: ["Madrid", "Oporto", "Lisboa", "Faro"], c: 2, h: "Famosa por sus tranvías y fados.", imgCorrecta: "lisboa.jpg" },
+        { q: "11. ¿Cuántas patas tiene una araña?", tipo: "texto", o: ["6", "10", "8", "4"], c: 2, h: "Dos más que un insecto común.", imgCorrecta: "arana.jpg" },
+        { q: "12. ¿Quién es conocido como el 'Rey de la Selva'?", tipo: "texto", o: ["Tigre", "Elefante", "León", "Gorila"], c: 2, h: "Tiene una gran melena.", imgCorrecta: "leon.jpg" },
+        { 
+          q: "13. Creemos un verso usando palabras sencillas terminadas en -CIÓN:", 
+          tipo: "rima", 
+          palabras: "Palabras: CANCIÓN ♦ CORAZÓN ♦ ILUSIÓN ♦ ATENCIÓN",
+          useAudio: true,
+          o: [
+            "Escucho esta CANCIÓN con mucha ATENCIÓN, me brota la ILUSIÓN dentro del CORAZÓN.", 
+            "El cielo está despejado y soleado esta bonita mañana de primavera.", 
+            "Me gusta comer pan con mermelada dulce cuando me levanto temprano.", 
+            "El jardín se llenó de lindas mariposas amarillas ayer por la tarde."
+          ], 
+          c: 0, 
+          h: "Utiliza el widget de Spotify para poner la música de fondo y rima con el grupo.",
+          imgCorrecta: "musica_rimas.jpg"
+        },
+        { q: "14. ¿Cuántos animales metió Moisés en su arca?", tipo: "texto", o: ["Dos de cada especie", "Ciento un animales", "Ninguno. El del arca era Noé", "Siete pares de cada uno"], c: 2, h: "Asegúrate de recordar bien el nombre del personaje bíblico de la historia.", imgCorrecta: "arca_noe.jpg" },
+        { q: "15. Para ganar el gran premio final: ¿Cómo se llama nuestro planeta?", tipo: "texto", o: ["Marte", "La Tierra", "Venus", "Júpiter"], c: 1, h: "El planeta azul que habitamos todos.", imgCorrecta: "tierra.jpg" }
+    ];
+
+    let current = 0;
+    let currentPrize = "0";
+
+    const steps = document.getElementById('prize-steps');
+    prizeList.forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'step';
+        div.id = `step-${i}`;
+        div.innerHTML = `<span>${i + 1}</span> ♦ €${p}`;
+        steps.appendChild(div);
+    });
+
+    function start() {
+        document.getElementById('mood-view').classList.add('hidden');
+        document.getElementById('quiz-view').classList.remove('hidden');
+        render();
+    }
+
+    function render() {
+        const d = questions[current];
+        document.getElementById('question-box').innerText = d.q;
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active-step'));
+        document.getElementById(`step-${current}`).classList.add('active-step');
+        
+        document.getElementById('next-question-btn').classList.add('hidden');
+        document.getElementById('answers-wrapper').classList.remove('hidden');
+
+        const successImgContainer = document.getElementById('success-image-container');
+        successImgContainer.classList.add('hidden');
+        successImgContainer.innerHTML = "";
+
+        const imgContainer = document.getElementById('question-image-container');
+        if (d.imgPregunta) {
+            imgContainer.innerHTML = `<img src="${d.imgPregunta}" alt="Imagen de la pregunta">`;
+            imgContainer.classList.remove('hidden');
+        } else {
+            imgContainer.classList.add('hidden');
+            imgContainer.innerHTML = "";
+        }
+
+        const rimaBadge = document.getElementById('rima-words');
+        if (d.tipo === "rima" && d.palabras) {
+            rimaBadge.innerText = d.palabras;
+            rimaBadge.classList.remove('hidden');
+        } else {
+            rimaBadge.classList.add('hidden');
+        }
+
+        const audioContainer = document.getElementById('audio-player-container');
+        if (d.useAudio) {
+            audioContainer.classList.remove('hidden');
+        } else {
+            audioContainer.classList.add('hidden');
+        }
+
+        for(let i=0; i<4; i++) {
+            const btn = document.getElementById(`ans${i}`);
+            const label = document.getElementById(`l${i}`);
+            
+            btn.className = 'answer-btn';
+            btn.disabled = false;
+            btn.style.opacity = "1";
+
+            if(d.tipo === "imagen") {
+                label.innerHTML = `<img src="${d.o[i]}" alt="Opción ${i}">`;
+            } else {
+                label.innerText = d.o[i];
+            }
+        }
+    }
+
+    function selectAnswer(idx) {
+        const d = questions[current];
+        const correct = d.c;
+        document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
+        
+        if(idx === correct) {
+            document.getElementById(`ans${idx}`).classList.add('correct');
+            currentPrize = prizeList[current];
+            fireworkExplosion();
+
+            if(d.imgCorrecta) {
+                const successImgContainer = document.getElementById('success-image-container');
+                successImgContainer.innerHTML = `<img src="${d.imgCorrecta}" class="animate__animated animate__zoomIn" alt="Respuesta Correcta">`;
+                successImgContainer.classList.remove('hidden');
+            }
+
+            document.getElementById('answers-wrapper').classList.add('hidden');
+            document.getElementById('next-question-btn').classList.remove('hidden');
+
+        } else {
+            document.getElementById(`ans${idx}`).classList.add('wrong');
+            document.getElementById(`ans${correct}`).classList.add('correct');
+            setTimeout(() => end(false), 2000);
+        }
+    }
+
+    function goToNextQuestion() {
+        current++;
+        if(current < questions.length) {
+            render();
+        } else {
+            end(true);
+        }
+    }
+
+    function fireworkExplosion() {
+        for(let i=0; i<40; i++) {
+            const f = document.createElement('div');
+            f.className = 'firework';
+            f.innerText = moneyItems[Math.floor(Math.random()*moneyItems.length)];
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 250 + Math.random() * 450;
+            f.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+            f.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+            f.style.setProperty('--rot', Math.random() * 360 + 'deg');
+            document.body.appendChild(f);
+            setTimeout(() => f.remove(), 1500);
+        }
+    }
+
+    function call50() {
+        const correct = questions[current].c;
+        let opts = [0,1,2,3].filter(i => i !== correct).sort(()=>Math.random()-0.5);
+        for(let i=0; i<2; i++) {
+            document.getElementById(`ans${opts[i]}`).style.opacity = "0.1";
+            document.getElementById(`ans${opts[i]}`).disabled = true;
+        }
+        document.getElementById('j-50').disabled = true;
+    }
+
+    function callPublic() {
+        alert("📊 El público sugiere la opción " + ["A", "B", "C", "D"][questions[current].c]);
+        document.getElementById('j-pub').disabled = true;
+    }
+
+    function callFriend() {
+        alert("📞 Tu amigo dice: 'Estoy casi seguro de que la respuesta correcta es la " + ["A", "B", "C", "D"][questions[current].c] + "'.");
+        document.getElementById('j-call').disabled = true;
+    }
+
+    function callHint() {
+        alert("🎁 PISTA: " + questions[current].h);
+        document.getElementById('j-hint').disabled = true;
+    }
+
+    function end(win) {
+        document.getElementById('quiz-view').classList.add('hidden');
+        document.getElementById('end-view').classList.remove('hidden');
+        document.getElementById('total-cash').innerText = "€" + currentPrize;
+        if(win) {
+            document.getElementById('win-container').classList.remove('hidden');
+        } else {
+            document.getElementById('moai-container').classList.remove('hidden');
+        }
+    }
+</script>
+</body>
+</html>
